@@ -38,4 +38,9 @@ posts = [
 @login_required
 def list_posts(request):
     """List existing posts."""
-    return render(request, 'posts/feed.html', {'posts': posts})
+    profile = request.user.profile
+    return render(request=request, template_name='posts/feed.html', context={
+        'profile': profile,
+        'user': request.user,
+        'posts': posts
+    })
