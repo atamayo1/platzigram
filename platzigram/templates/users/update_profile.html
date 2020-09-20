@@ -12,19 +12,6 @@
         <div class="col-6 p-4" id="profile-box">
             <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-
-                {% for field in form %}
-                    {% if field.success %}
-                    <p class="alert alert-success">{{ field.label }}: {{ field.success|striptags }}</p>
-                    {% endif %}
-                {% endfor %}
-
-                {% for field in form %}
-                    {% if field.errors %}
-                    <p class="alert alert-danger">{{ field.label }}: {{ field.errors|striptags }}</p>
-                    {% endif %}
-                {% endfor %}
-
                 <div class="media">
                     {% if profile.picture %}
                         <img src="{{ profile.picture.url }}" class="rounded-circle" alt="" width="50" height="50" />
@@ -34,31 +21,118 @@
                     
                     <div class="media-body">
                         <h5 class="ml-4">@{{ user.username }} | {{ user.get_full_name }}</h5>
-                        <p class="ml-4"><input type="file" name="picture" required="true"></p>
+                        <p class="ml-4"><input type="file" name="picture"></p>
                     </div>
                 </div> 
+                
+                {% for error in form.picture.errors %}
+                    <div class="alert alert-danger">
+                        <b>Picture: </b>{{ error }}
+                    </div>
+                {% endfor %}
+                    
+                <hr><br>   
                 <div class="form-group">
-                    <input type="text" placeholder="Username" name="username" id="username" class="form-control" value="{{ user.username }}" required="true" autofocus=""/>
+                    <input 
+                    type="text" 
+                    placeholder="Username" 
+                    name="username" 
+                    id="username" 
+                    class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                    value="{% if form.errors %}{{ form.username.value }}{% else %}{{ user.username }}{% endif %}" 
+                    required="true" 
+                    autofocus=""/>
+                </div> 
+                {% for error in form.username.errors %}
+                    <div class="alert alert-danger">
+                        <b>Username: </b>{{ error }}
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <input 
+                    type="text" 
+                    placeholder="Nombre" 
+                    name="first_name" 
+                    id="first_name" 
+                    class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
+                    value="{% if form.errors %}{{ form.first_name.value }}{% else %}{{ user.first_name }}{% endif %}" 
+                    required="true"/>
+                </div>
+                {% for error in form.first_name.errors %}
+                    <div class="alert alert-danger">
+                        <b>First name: </b>{{ error }}
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <input 
+                    type="text" 
+                    placeholder="Apellido" 
+                    name="last_name" 
+                    id="last_name" 
+                    class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
+                    value="{% if form.errors %}{{ form.last_name.value }}{% else %}{{ user.last_name }}{% endif %}" 
+                    required="true" />
+                </div>
+                {% for error in form.last_name.errors %}
+                    <div class="alert alert-danger">
+                        <b>Last name: </b>{{ error }}
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <input 
+                        type="url" 
+                        placeholder="Website" 
+                        name="website" 
+                        id="website" 
+                        class="form-control {% if form.website.errors %}is-invalid{% endif %}" 
+                        value="{% if form.errors %}{{ form.website.value }}{% else %}{{ profile.website }}{% endif %}" />
+                    <div class="invalid-feedback">
+                        {% for error in form.website.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>    
                 </div> 
                 <div class="form-group">
-                    <input type="text" placeholder="Nombre" name="first_name" id="first_name" class="form-control" value="{{ user.first_name }}" required="true"/>
+                    <textarea 
+                    class="form-control {% if form.biography.errors %}is-invalid{% endif %}" 
+                    name="biography" 
+                    placeholder="Biografía">{% if form.errors %}{{ form.biography.value }}{% else %}{{ profile.biography }}{% endif %}</textarea>
                 </div>
+                {% for error in form.biography.errors %}
+                    <div class="alert alert-danger">
+                        <b>Biography: </b>{{ error }}
+                    </div>
+                {% endfor %}
                 <div class="form-group">
-                    <input type="text" placeholder="Apellido" name="last_name" id="last_name" class="form-control" value="{{ user.last_name }}" required="true"/>
+                    <input 
+                    type="text" 
+                    placeholder="Celular" 
+                    name="phone_number" 
+                    id="phone_number" 
+                    class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}" 
+                    value="{% if form.errors %}{{ form.phone_number.value }}{% else %}{{ profile.phone_number }}{% endif %}"/>
                 </div>
+                {% for error in form.phone_number.errors %}
+                    <div class="alert alert-danger">
+                        <b>Phone number: </b>{{ error }}
+                    </div>
+                {% endfor %}
                 <div class="form-group">
-                    <input type="url" placeholder="Website" name="website" id="website" class="form-control" value="{{ profile.website }}" required="true"/>
-                </div> 
-                <div class="form-group">
-                    <textarea class="form-control" name="biography" placeholder="Biografía">{{ profile.biography }}</textarea>
+                    <input 
+                    type="email" 
+                    placeholder="Correo" 
+                    name="email" 
+                    id="email" 
+                    class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                    value="{% if form.errors %}{{ form.email.value }}{% else %}{{ user.email }}{% endif %}" 
+                    required="true"/>
                 </div>
-                <div class="form-group">
-                    <input type="text" placeholder="Celular" name="phone_number" id="phone_number" class="form-control" value="{{ profile.phone_number }}" required="true"/>
-                </div>
-                <div class="form-group">
-                    <input type="email" placeholder="Correo" name="email" id="email" class="form-control" value="{{ user.email }}" required="true"/>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block mt-5">Actualizar</button>
+                {% for error in form.email.errors %} 
+                    <div class="alert alert-danger">
+                        <b>Email: </b>{{ error }}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary btn-block mt-5">Actualizar info</button>
             </form>
         </div>
     </div>
