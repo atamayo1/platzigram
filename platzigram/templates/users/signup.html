@@ -8,27 +8,12 @@
 {% if error %}
 <p class="alert alert-danger">{{ error }}</p>
 {% endif %}
-<form action="{% url 'signup' %}" method="POST" class="text-center">
+<form action="{% url 'users:signup' %}" method="POST" class="text-center">
     {% csrf_token %}
-    <div class="form-group">
-        <input type="text" placeholder="Username" name="username" id="username" class="form-control" required="" autofocus=""/>
-    </div>
-    <div class="form-group">
-        <input type="password" placeholder="Contraseña" name="password" id="password" class="form-control" required=""/>
-    </div>
-    <div class="form-group">
-        <input type="password" placeholder="Confirmar Contraseña" name="confirm_password" id="confirm_password" class="form-control" required=""/>
-    </div>
-    <div class="form-group">
-        <input type="text" placeholder="Nombre" name="first_name" id="first_name" class="form-control" required=""/>
-    </div>
-    <div class="form-group">
-        <input type="text" placeholder="Apellido" name="last_name" id="last_name" class="form-control" required=""/>
-    </div>
-    <div class="form-group">
-        <input type="email" placeholder="Correo" name="email" id="email" class="form-control" required=""/>
-    </div>
-    <button type="submit" class="btn btn-primary btn-block mt-5">Register</button>
-    <a href="{% url 'login' %}" class="btn btn-link mt-3">Sign in</button>
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary btn-block mt-5">Registrarse</button>
 </form>
+<p class="mt-4">
+    ¿Ya tienes una cuenta? <a href="{% url 'users:login' %}" class="btn btn-link">Inicia sesión aquí</a>
+</p> 
 {% endblock %}

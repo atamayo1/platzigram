@@ -8,7 +8,7 @@
 {% if error %}
 <p style="color: red;">{{ error }}</p>
 {% endif %}
-<form action="{% url 'login' %}" method="POST" class="text-center">
+<form action="{% url 'users:login' %}" method="POST" class="text-center">
     {% csrf_token %}
     <div class="form-group">
         <input type="text" placeholder="Username" name="username" id="username" class="form-control" required="" autofocus=""/>
@@ -16,7 +16,9 @@
     <div class="form-group">
         <input type="password" placeholder="Contraseña" name="password" id="password" class="form-control" required=""/>
     </div>
-    <button type="submit" class="btn btn-primary btn-block mt-5">Sign in</button>
-    <a href="{% url 'signup' %}" class="btn btn-link mt-3">Sign up</button>
+    <button type="submit" class="btn btn-primary btn-block mt-5">Iniciar sesión</button> 
 </form>
+<p class="mt-4">
+    ¿No tienes una cuenta todavía? <a href="{% url 'users:signup' %}" class="btn btn-link">Registrate aquí</a>
+</p> 
 {% endblock %}

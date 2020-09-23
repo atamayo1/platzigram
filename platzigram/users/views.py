@@ -1,16 +1,36 @@
 # Django
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import authenticate, login, logout
 
 # Models
 from django.contrib.auth.models import User
+from posts.models import Post
 from users.models import Profile
 
+from django.views.generic import DetailView
+
 # Forms
-from users.forms import ProfileForm
+from users.forms import ProfileForm, SignupForm
 
 # Create your views here.
+class UserDetailView(LoginRequiredMixin, DetailView):
+    """ User detail view. """
+    template_name = 'users/detail.html'
+    slug_field = 'username'
+    slug_url_kwarg = 'username'
+    queryset = User.objects.all()
+    context_object_name = 'user'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.get_object()
+        context['posts'] = Post.objects.filter(user=user).order_by('-created')
+        return context
+
+
 def login_view(request):
     """Login view"""
     if request.method == 'POST':
@@ -19,7 +39,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            return redirect('feed')
+            return redirect('posts:feed')
         else:
             return render(request, 'users/login.html', {'error': 'Username y contraseña invalido'})
 
@@ -30,31 +50,21 @@ def signup_view(request):
     """Signup view"""
     # import pdb; pdb.set_trace()
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        confirm_password = request.POST['confirm_password']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        email = request.POST['email']
-        if password != confirm_password:
-           return render(request, 'users/signup.html', {'error': 'La contraseña de confirmación es incorrecta'})
-        else:
-            try:
-                user = User.objects.create_user(username=username, password=password)
-            except:
-                return render(request, 'users/signup.html', {'error': 'Username ya esta creado'})
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('users:login')
+    else:
+        form.SignupForm()
 
-            user.first_name = request.POST['first_name']
-            user.last_name = request.POST['last_name']
-            user.email = request.POST['email']
-            user.save()
-            profile = Profile(user=user) 
-            profile.save()
-            return redirect('login')
+    return render(
+        request=request, 
+        template_name='users/signup.html', 
+        context={'form': form}
+    )  
+          
 
-    return render(request, 'users/signup.html')        
-
-
+@login_required
 def update_profile(request):
     """ Update profile view """
     profile = request.user.profile
@@ -62,7 +72,7 @@ def update_profile(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES)
         if form.is_valid():
-            print(form.cleaned_data)  
+            #print(form.cleaned_data)  
             data = form.cleaned_data
 
             profile.username = data['username']
@@ -75,7 +85,8 @@ def update_profile(request):
             profile.email = data['email']
             profile.save()
 
-            return redirect('update_profile')   
+            url = reverse('users:detail', kwargs={'username': request.user.username})
+            return redirect(url)   
     else:
         form = ProfileForm()    
 
@@ -94,4 +105,4 @@ def update_profile(request):
 def logout_view(request):
     """ Logout a user. """
     logout(request)
-    return redirect('login')
+    return redirect('users:login')
