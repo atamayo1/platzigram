@@ -40,6 +40,7 @@ class SignupForm(forms.Form):
         profile = Profile(user=user) 
         profile.save()
 
+"""
 class ProfileForm(forms.Form):
     username = forms.CharField(max_length=50)
     first_name = forms.CharField(max_length=50)
@@ -49,3 +50,4 @@ class ProfileForm(forms.Form):
     phone_number = forms.CharField(max_length=20, required=False)
     email = forms.EmailField(max_length=200)
     picture = forms.ImageField() 
+"""

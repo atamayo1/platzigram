@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block container %}
-{% if error %}
-<p style="color: red;">{{ error }}</p>
+{% if form.errors %}
+<p class="alert alert-danger">Your username and password didn't match. Please try again.</p>
 {% endif %}
 <form action="{% url 'users:login' %}" method="POST" class="text-center">
     {% csrf_token %}
